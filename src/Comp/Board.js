@@ -2750,14 +2750,14 @@ const Board = () => {
           <ShowPieces key={id} getPieces={element} />
         ))}
       </div>
-      <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
+      {/* <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
         Available Pieces :
       </label>
       <div className="bottomHalf">
         {allBlackPieces.map((element, id) => (
           <ShowPieces key={id} getPieces={element.piece} />
         ))}
-      </div>
+      </div> */}
       <br />
       <div className="middleSection">
         <div className="checkBox">
@@ -2794,14 +2794,14 @@ const Board = () => {
           )}
         </div>
       </div>
-      <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
+      {/* <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
         Available Pieces :
       </label>
       <div className="bottomHalf">
         {allWhitePieces.map((element, id) => (
           <ShowPieces key={id} getPieces={element.piece} />
         ))}
-      </div>
+      </div> */}
       <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
         Captured Pieces :
       </label>
