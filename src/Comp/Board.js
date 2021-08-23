@@ -471,8 +471,10 @@ const Board = () => {
   const [selectedCell, setselectedCell] = useState(Number); // to take record which number cell is clicked
   const [darkRedCell, setdarkRedCell] = useState([]); // if piece can able kill something then that places are store here
   const [normalDarkCell, setnormalDarkCell] = useState([]); //to make darkredcell normal after move/ kill/after clicking on another element
-  const [possibleBlackCheckCells, setpossibleBlackCheckCells] = useState([]); //all white pieces check if anyone able to kill king of black then that piece no. adds here
-  const [possibleWhiteCheckCells, setpossibleWhiteCheckCells] = useState([]); //all black pieces check if anyone able to kill king of white then that piece no. adds here
+  const [arrayOfCheckCellsToBlackKing, setarrayOfCheckCellsToBlackKing] =
+    useState([]); //all white pieces check if anyone able to kill king of black then that piece no. adds here
+  const [arrayOfCheckCellsToWhiteKing, setarrayOfCheckCellsToWhiteKing] =
+    useState([]); //all black pieces check if anyone able to kill king of white then that piece no. adds here
   const [capturedPiecesByBlack, setcapturedPiecesByBlack] = useState([]); //add all capture pieces of white from kill function
   const [capturedPiecesByWhite, setcapturedPiecesByWhite] = useState([]); //add all capture pieces of black from kill function
   const [displayBlackCheck, setdisplayBlackCheck] = useState(false);
@@ -499,9 +501,9 @@ const Board = () => {
   }, [darkRedCell]); //if change in array of darkredcell then render that cells as darkred
 
   useEffect(() => {
-    findWhiteCheck();
-    findBlackCheck();
-  }, [findcheckMove, findcheckKill]); //if change in array of findallWhiteCheckCells then run findWhiteCheck function
+    findCheckToBlackKing();
+    findCheckToBhiteKing();
+  }, [findcheckMove, findcheckKill]); //if change in array of findallWhiteCheckCells then run findCheckToBlackKing function
 
   useEffect(() => {
     displayWCheck();
@@ -529,19 +531,30 @@ const Board = () => {
     if (props[0][1] === "black") {
       switch (props[0][0]) {
         case "Pawn":
-          pawnBMove(props[1]);
+          const red = pawnBMove(props[1]);
+          setredCell(red);
+          const darkRed = pawnBPossibleKill(props[1]);
+          setdarkRedCell(darkRed);
           break;
         case "Knight":
-          knightBMove(props[1]);
+          const knightB = knightBMove(props[1]);
+          setredCell(knightB[0]);
+          setdarkRedCell(knightB[1]);
           break;
         case "Rook":
-          rookBMove(props[1]);
+          const rookB = rookBMove(props[1]);
+          setredCell(rookB[0]);
+          setdarkRedCell(rookB[1]);
           break;
         case "Bishop":
-          bishopBMove(props[1]);
+          const bishopB = bishopBMove(props[1]);
+          setredCell(bishopB[0]);
+          setdarkRedCell(bishopB[1]);
           break;
         case "Queen":
-          queenBMove(props[1]);
+          const queenB = queenBMove(props[1]);
+          setredCell(queenB[0]);
+          setdarkRedCell(queenB[1]);
           break;
         case "King":
           kingBMove(props[1]);
@@ -554,21 +567,33 @@ const Board = () => {
     } else if (props[0][1] === "white") {
       switch (props[0][0]) {
         case "Pawn":
-          pawnWMove(props[1]);
+          const red = pawnWMove(props[1]);
+          setredCell(red);
+          const darkRed = pawnWPossibleKill(props[1]);
+          setdarkRedCell(darkRed);
           break;
         case "Knight":
-          knightWMove(props[1]);
+          const knightW = knightWMove(props[1]);
+          setredCell(knightW[0]);
+          setdarkRedCell(knightW[1]);
           break;
         case "":
           break;
         case "Rook":
-          rookWMove(props[1]);
+          // rookWMove(props[1]);
+          const rookW = rookWMove(props[1]);
+          setredCell(rookW[0]);
+          setdarkRedCell(rookW[1]);
           break;
         case "Bishop":
-          bishopWMove(props[1]);
+          const bishopW = bishopWMove(props[1]);
+          setredCell(bishopW[0]);
+          setdarkRedCell(bishopW[1]);
           break;
         case "Queen":
-          queenWMove(props[1]);
+          const queenW = queenWMove(props[1]);
+          setredCell(queenW[0]);
+          setdarkRedCell(queenW[1]);
           break;
         case "King":
           kingWMove(props[1]);
@@ -583,34 +608,36 @@ const Board = () => {
     if (props < 29 && eachCell[Number(props) + 10].piece[0] === "") {
       //// to avoid 1st move of pawn is 2 rows
       const number = [Number(props) + 10, Number(props) + 20];
-      setredCell(number);
+      return number;
     } else if (props < 29 && eachCell[Number(props) + 10].piece[0] !== "") {
       const number = [];
-      setredCell(number);
+      return number;
     } else {
       const number = [Number(props) + 10];
-      setredCell(number);
+      return number;
     }
-    //find all possible darkredspot array
+  };
+  //find all possible darkredspot array
+  const pawnBPossibleKill = (props) => {
     let rightDigit = Math.floor((props / 1) % 10);
     if (rightDigit < 2) {
       const kill = [Number(props) + 11];
       const killNumber = kill.filter((element) => {
         return eachCell[element].piece[1] !== "black";
       });
-      setdarkRedCell(killNumber);
+      return killNumber;
     } else if (rightDigit > 7) {
       const kill = [Number(props) + 9];
       const killNumber = kill.filter((element) => {
         return eachCell[element].piece[1] !== "black";
       });
-      setdarkRedCell(killNumber);
+      return killNumber;
     } else {
       const kill = [Number(props) + 9, Number(props) + 11];
       const killNumber = kill.filter((element) => {
         return eachCell[element].piece[1] !== "black";
       });
-      setdarkRedCell(killNumber);
+      return killNumber;
     }
   };
   //white pawn move function
@@ -618,32 +645,34 @@ const Board = () => {
     if (props > 70 && eachCell[Number(props) - 10].piece[0] === "") {
       // to avoid 1st move of pawn is 2 rows
       const number = [Number(props) - 10, Number(props) - 20];
-      setredCell(number);
+      return number;
     } else if (props > 70 && eachCell[Number(props) - 10].piece[0] !== "") {
       const number = [];
-      setredCell(number);
+      return number;
     } else {
       const number = [Number(props) - 10];
-      setredCell(number);
+      return number;
     }
+  };
+  const pawnWPossibleKill = (props) => {
     if (Math.floor((props / 1) % 10) < 2) {
       const kill = [Number(props) - 9];
       const killNumber = kill.filter((element) => {
         return eachCell[element].piece[1] !== "white";
       });
-      setdarkRedCell(killNumber);
+      return killNumber;
     } else if (Math.floor((props / 1) % 10) > 7) {
       const kill = [Number(props) - 11];
       const killNumber = kill.filter((element) => {
         return eachCell[element].piece[1] !== "white";
       });
-      setdarkRedCell(killNumber);
+      return killNumber;
     } else {
       const kill = [Number(props) - 9, Number(props) - 11];
       const killNumber = kill.filter((element) => {
         return eachCell[element].piece[1] !== "white";
       });
-      setdarkRedCell(killNumber);
+      return killNumber;
     }
   };
   //black knight move
@@ -673,12 +702,11 @@ const Board = () => {
         return true; //if above both conditions are rejected then this is true
       }
     });
-    setredCell(number);
 
     const killNumber = number.filter((element) => {
       return eachCell[element].piece[1] === "white"; //filterin number array if that cell is white
     });
-    setdarkRedCell(killNumber);
+    return [number, killNumber];
   };
   //white knight move
   const knightWMove = (props) => {
@@ -706,20 +734,22 @@ const Board = () => {
         return true;
       }
     });
-    setredCell(number);
     const killNumber = number.filter((element) => {
       return eachCell[element].piece[1] === "black";
     });
-    setdarkRedCell(killNumber);
+    return [number, killNumber];
   };
   //black rook move
   const rookBMove = (props) => {
+    const number = [];
+    const kill = [];
     for (
       let index = Number(props) + 1;
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index++
     ) {
-      setredCell((prev) => [...prev, index]);
+      // setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -730,7 +760,7 @@ const Board = () => {
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index--
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -740,7 +770,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index - 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -750,7 +780,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index + 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -763,7 +793,8 @@ const Board = () => {
       index++
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        // setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -776,7 +807,7 @@ const Board = () => {
       index--
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -789,7 +820,7 @@ const Board = () => {
       index = index - 10
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -802,22 +833,25 @@ const Board = () => {
       index = index + 10
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
         break;
       }
     }
+    return [number, kill];
   };
   //white rook move
   const rookWMove = (props) => {
+    const number = [];
+    const kill = [];
     for (
       let index = Number(props) + 1;
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index++
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -828,18 +862,17 @@ const Board = () => {
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index--
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
     }
-    // console.log(redCell);
     for (
       let index = Number(props) - 10;
       index > 10 && index < 89;
       index = index - 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -849,7 +882,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index + 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -862,7 +895,7 @@ const Board = () => {
       index++
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -875,7 +908,7 @@ const Board = () => {
       index--
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -888,7 +921,7 @@ const Board = () => {
       index = index - 10
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -901,15 +934,18 @@ const Board = () => {
       index = index + 10
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
         break;
       }
     }
+    return [number, kill];
   };
   const bishopBMove = (props) => {
+    const number = [];
+    const kill = [];
     for (
       let index = Number(props) + 11;
       Math.floor(index % 10) !== 9 &&
@@ -918,7 +954,7 @@ const Board = () => {
       index < 89;
       index = index + 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -932,7 +968,7 @@ const Board = () => {
       index < 89;
       index = index - 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -945,7 +981,7 @@ const Board = () => {
       index < 89;
       index = index - 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -958,7 +994,7 @@ const Board = () => {
       index < 89;
       index = index + 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -974,7 +1010,7 @@ const Board = () => {
       index = index + 9
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -990,7 +1026,7 @@ const Board = () => {
       index = index - 11
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1006,7 +1042,7 @@ const Board = () => {
       index = index - 9
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1022,15 +1058,18 @@ const Board = () => {
       index = index + 11
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
         break;
       }
     }
+    return [number, kill];
   };
   const bishopWMove = (props) => {
+    const number = [];
+    const kill = [];
     for (
       let index = Number(props) + 11;
       Math.floor(index % 10) !== 9 &&
@@ -1039,7 +1078,7 @@ const Board = () => {
       index < 89;
       index = index + 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1053,7 +1092,7 @@ const Board = () => {
       index < 89;
       index = index - 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1066,7 +1105,7 @@ const Board = () => {
       index < 89;
       index = index - 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1079,7 +1118,7 @@ const Board = () => {
       index < 89;
       index = index + 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1095,7 +1134,7 @@ const Board = () => {
       index = index + 9
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1111,7 +1150,7 @@ const Board = () => {
       index = index - 11
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1127,7 +1166,7 @@ const Board = () => {
       index = index - 9
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1143,15 +1182,18 @@ const Board = () => {
       index = index + 11
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
         break;
       }
     }
+    return [number, kill];
   };
   const queenBMove = (props) => {
+    const number = [];
+    const kill = [];
     for (
       let index = Number(props) + 11;
       Math.floor(index % 10) !== 9 &&
@@ -1160,7 +1202,7 @@ const Board = () => {
       index < 89;
       index = index + 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1174,7 +1216,7 @@ const Board = () => {
       index < 89;
       index = index - 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1187,7 +1229,7 @@ const Board = () => {
       index < 89;
       index = index - 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1200,7 +1242,7 @@ const Board = () => {
       index < 89;
       index = index + 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1216,7 +1258,7 @@ const Board = () => {
       index = index + 9
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1232,7 +1274,7 @@ const Board = () => {
       index = index - 11
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1248,7 +1290,7 @@ const Board = () => {
       index = index - 9
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1264,7 +1306,7 @@ const Board = () => {
       index = index + 11
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1277,7 +1319,7 @@ const Board = () => {
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index++
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1288,7 +1330,7 @@ const Board = () => {
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index--
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1298,7 +1340,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index - 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1308,7 +1350,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index + 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1321,7 +1363,7 @@ const Board = () => {
       index++
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1334,7 +1376,7 @@ const Board = () => {
       index--
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1347,7 +1389,7 @@ const Board = () => {
       index = index - 10
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
@@ -1360,21 +1402,27 @@ const Board = () => {
       index = index + 10
     ) {
       if (eachCell[index].piece[1] === "white") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "black") {
         break;
       }
     }
+    return [number, kill];
   };
   const queenWMove = (props) => {
+    // return [number, kill];
+    // kill.push(index);
+    // number.push(index);
+    const number = [];
+    const kill = [];
     for (
       let index = Number(props) + 1;
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index++
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1385,7 +1433,7 @@ const Board = () => {
       Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
       index--
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1396,7 +1444,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index - 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1406,7 +1454,7 @@ const Board = () => {
       index > 10 && index < 89;
       index = index + 10
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1419,7 +1467,7 @@ const Board = () => {
       index++
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1432,7 +1480,7 @@ const Board = () => {
       index--
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1445,7 +1493,7 @@ const Board = () => {
       index = index - 10
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1458,14 +1506,14 @@ const Board = () => {
       index = index + 10
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
         break;
       }
     }
-
+    /////////////////
     for (
       let index = Number(props) + 11;
       Math.floor(index % 10) !== 9 &&
@@ -1474,7 +1522,7 @@ const Board = () => {
       index < 89;
       index = index + 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1488,7 +1536,7 @@ const Board = () => {
       index < 89;
       index = index - 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1501,7 +1549,7 @@ const Board = () => {
       index < 89;
       index = index - 11
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1514,7 +1562,7 @@ const Board = () => {
       index < 89;
       index = index + 9
     ) {
-      setredCell((prev) => [...prev, index]);
+      number.push(index);
       if (eachCell[index].piece[0] !== "") {
         break;
       }
@@ -1530,7 +1578,7 @@ const Board = () => {
       index = index + 9
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1546,7 +1594,7 @@ const Board = () => {
       index = index - 11
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1562,7 +1610,7 @@ const Board = () => {
       index = index - 9
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
@@ -1578,13 +1626,14 @@ const Board = () => {
       index = index + 11
     ) {
       if (eachCell[index].piece[1] === "black") {
-        setdarkRedCell((prev) => [...prev, index]);
+        kill.push(index);
         break;
       }
       if (eachCell[index].piece[1] === "white") {
         break;
       }
     }
+    return [number, kill];
   };
   const kingBMove = (props) => {
     const a = Number(props) - 11; // all possible positions of knight
@@ -1689,8 +1738,8 @@ const Board = () => {
     eachCell[selectedCell].piece = a;
     makeCellNormal();
     darkCellNormal();
-    findWhiteCheck();
-    findBlackCheck();
+    findCheckToBlackKing();
+    findCheckToBhiteKing();
     setfindcheckMove(!findcheckMove);
     setturn(!turn);
   };
@@ -1704,23 +1753,23 @@ const Board = () => {
     eachCell[selectedCell].piece = ["", ""];
     makeCellNormal();
     darkCellNormal();
-    findWhiteCheck();
-    findBlackCheck();
+    findCheckToBlackKing();
+    findCheckToBhiteKing();
     setfindcheckKill(!findcheckKill);
     setturn(!turn);
   };
   const movenow = () => {
     if (
-      possibleBlackCheckCells.length !== 0 ||
-      possibleWhiteCheckCells.length !== 0
+      arrayOfCheckCellsToBlackKing.length !== 0 ||
+      arrayOfCheckCellsToWhiteKing.length !== 0
     ) {
       checkBeforeMove(futureValue, previousValue, Number(futureSelectedCell));
     }
   };
   const killnow = () => {
     if (
-      possibleBlackCheckCells.length !== 0 ||
-      possibleWhiteCheckCells.length !== 0
+      arrayOfCheckCellsToBlackKing.length !== 0 ||
+      arrayOfCheckCellsToWhiteKing.length !== 0
     ) {
       checkBeforeKill(futureValue, previousValue, Number(futureSelectedCell));
     } else {
@@ -1731,17 +1780,17 @@ const Board = () => {
   };
 
   const checkBeforeMove = (a, b, props) => {
-    if (turn && possibleBlackCheckCells.length !== 0) {
+    if (turn && arrayOfCheckCellsToBlackKing.length !== 0) {
       makeMoveUndo(a, b, props);
-    } else if (!turn && possibleWhiteCheckCells.length !== 0) {
+    } else if (!turn && arrayOfCheckCellsToWhiteKing.length !== 0) {
       makeMoveUndo(a, b, props);
     }
   };
 
   const checkBeforeKill = (a, b, props) => {
-    if (turn && possibleBlackCheckCells.length !== 0) {
+    if (turn && arrayOfCheckCellsToBlackKing.length !== 0) {
       makeKillUndo(a, b, props);
-    } else if (!turn && possibleWhiteCheckCells.length !== 0) {
+    } else if (!turn && arrayOfCheckCellsToWhiteKing.length !== 0) {
       makeKillUndo(a, b, props);
     } else {
       turn
@@ -1765,34 +1814,17 @@ const Board = () => {
   };
 
   //find all white pieces who can give check to black king
-  const findWhiteCheck = () => {
+  const findCheckToBlackKing = () => {
     const newEachcell = eachCell;
-    setpossibleBlackCheckCells([]);
-
+    setarrayOfCheckCellsToBlackKing([]);
+    const allPossibleKillCellOfWhite = [];
     Object.keys(newEachcell).forEach((element, id) => {
       if (newEachcell[element].piece[1] === "white") {
         switch (newEachcell[element].piece[0]) {
           case "Pawn":
-            const apawn = newEachcell[element].cellNumber - 11; // all possible positions of knight
-            const bpawn = newEachcell[element].cellNumber - 9;
-
-            const possibileMovePawn = [apawn, bpawn]; //all knight positions save in this
-
-            const numberPawn = possibileMovePawn.filter((element) => {
-              if (element < 11 || element > 88) {
-                //if value less than 11 & greter than 88 remove that number
-                return false;
-              } else if (
-                Math.floor(element % 10) === 9 || // 1st from right digit is equal to 9 is reject
-                Math.floor(element % 10) === 0 //1st from right digit is equal to 0 is reject
-              ) {
-                return false;
-              } else {
-                return true; //if above both conditions are rejected then this is true
-              }
-            });
-
-            const killNumberPawn = numberPawn.filter((element) => {
+            const darkRed = pawnWPossibleKill(newEachcell[element].cellNumber);
+            // allPossibleKillCellOfWhite.push(...darkRed);
+            const killNumberPawn = darkRed.filter((element) => {
               if (
                 eachCell[element].piece[1] === "black" &&
                 eachCell[element].piece[0] === "King"
@@ -1801,434 +1833,82 @@ const Board = () => {
               }
             });
             if (killNumberPawn.length !== 0) {
-              setpossibleBlackCheckCells((prev) => [
+              setarrayOfCheckCellsToBlackKing((prev) => [
                 ...prev,
                 newEachcell[element].cellNumber,
               ]);
             }
+
             break;
           case "Rook":
-            for (
-              let index = newEachcell[element].cellNumber + 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index++
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index--
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 10;
-              index > 10 && index < 89;
-              index = index - 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 10;
-              index > 10 && index < 89;
-              index = index + 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            break;
-          case "Bishop":
-            for (
-              let index = newEachcell[element].cellNumber + 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            break;
-          case "Knight":
-            const a = newEachcell[element].cellNumber - 21; // all possible positions of knight
-            const b = newEachcell[element].cellNumber - 19;
-            const c = newEachcell[element].cellNumber - 12;
-            const d = newEachcell[element].cellNumber - 8;
-            const e = newEachcell[element].cellNumber + 8;
-            const f = newEachcell[element].cellNumber + 12;
-            const g = newEachcell[element].cellNumber + 19;
-            const h = newEachcell[element].cellNumber + 21;
-            const possibileMove = [a, b, c, d, e, f, g, h]; //all knight positions save in this
-
-            const number = possibileMove.filter((element) => {
-              if (element < 11 || element > 88) {
-                //if value less than 11 & greter than 88 remove that number
-                return false;
-              } else if (
-                Math.floor(element % 10) === 9 || // 1st from right digit is equal to 9 is reject
-                Math.floor(element % 10) === 0 //1st from right digit is equal to 0 is reject
-              ) {
-                return false;
-              } else {
-                return true; //if above both conditions are rejected then this is true
-              }
-            });
-
-            const killNumber = number.filter((element) => {
+            const rookB = rookWMove(newEachcell[element].cellNumber);
+            allPossibleKillCellOfWhite.push(...rookB[0]);
+            const killNumberRook = rookB[1].filter((element) => {
               if (
                 eachCell[element].piece[1] === "black" &&
                 eachCell[element].piece[0] === "King"
               ) {
                 return true;
               }
-              //filter number array if that cell is white
             });
-            setpossibleBlackCheckCells((prev) => [...prev, ...killNumber]);
+            if (killNumberRook.length !== 0) {
+              setarrayOfCheckCellsToBlackKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
+            }
+
+            break;
+          case "Bishop":
+            const bishopB = bishopWMove(newEachcell[element].cellNumber);
+            const killNumberBishop = bishopB[1].filter((element) => {
+              if (
+                eachCell[element].piece[1] === "black" &&
+                eachCell[element].piece[0] === "King"
+              ) {
+                return true;
+              }
+            });
+            if (killNumberBishop.length !== 0) {
+              setarrayOfCheckCellsToBlackKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
+            }
+
+            break;
+          case "Knight":
+            const knightB = knightWMove(newEachcell[element].cellNumber);
+            const killNumberKnight = knightB[1].filter((element) => {
+              if (
+                eachCell[element].piece[1] === "black" &&
+                eachCell[element].piece[0] === "King"
+              ) {
+                return true;
+              }
+            });
+            if (killNumberKnight.length !== 0) {
+              setarrayOfCheckCellsToBlackKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
+            }
             break;
           case "Queen":
-            for (
-              let index = newEachcell[element].cellNumber + 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index++
-            ) {
+            const queenW = queenWMove(newEachcell[element].cellNumber);
+            const killNumberQueen = queenW[1].filter((element) => {
               if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
+                eachCell[element].piece[1] === "black" &&
+                eachCell[element].piece[0] === "King"
               ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-
-                break;
+                return true;
               }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index--
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 10;
-              index > 10 && index < 89;
-              index = index - 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 10;
-              index > 10 && index < 89;
-              index = index + 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                console.log(index);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "black" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleBlackCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
+            });
+            if (killNumberQueen.length !== 0) {
+              setarrayOfCheckCellsToBlackKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
             }
             break;
           default:
@@ -2236,33 +1916,19 @@ const Board = () => {
         }
       }
     });
-    console.log(possibleBlackCheckCells);
+    console.log(arrayOfCheckCellsToBlackKing);
+    console.log(allPossibleKillCellOfWhite);
   };
   //find all black pieces who can give check to white king
-  const findBlackCheck = () => {
+  const findCheckToBhiteKing = () => {
     const newEachcell = eachCell;
-    setpossibleWhiteCheckCells([]);
+    setarrayOfCheckCellsToWhiteKing([]);
     Object.keys(newEachcell).forEach((element) => {
       if (newEachcell[element].piece[1] === "black") {
         switch (newEachcell[element].piece[0]) {
           case "Pawn":
-            const apawn = newEachcell[element].cellNumber + 11; // all possible positions of knight
-            const bpawn = newEachcell[element].cellNumber + 9;
-            const possibileMovePawn = [apawn, bpawn]; //all knight positions save in this
-            const numberPawn = possibileMovePawn.filter((element) => {
-              if (element < 11 || element > 88) {
-                //if value less than 11 & greter than 88 remove that number
-                return false;
-              } else if (
-                Math.floor(element % 10) === 9 || // 1st from right digit is equal to 9 is reject
-                Math.floor(element % 10) === 0 //1st from right digit is equal to 0 is reject
-              ) {
-                return false;
-              } else {
-                return true; //if above both conditions are rejected then this is true
-              }
-            });
-            const killNumberPawn = numberPawn.filter((element) => {
+            const darkRed = pawnBPossibleKill(newEachcell[element].cellNumber);
+            const killNumberPawn = darkRed.filter((element) => {
               if (
                 eachCell[element].piece[1] === "white" &&
                 eachCell[element].piece[0] === "King"
@@ -2271,7 +1937,7 @@ const Board = () => {
               }
             });
             if (killNumberPawn.length !== 0) {
-              setpossibleWhiteCheckCells((prev) => [
+              setarrayOfCheckCellsToWhiteKing((prev) => [
                 ...prev,
                 newEachcell[element].cellNumber,
               ]);
@@ -2279,423 +1945,71 @@ const Board = () => {
 
             break;
           case "Rook":
-            for (
-              let index = newEachcell[element].cellNumber + 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index++
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                console.log(newEachcell[index].cellNumber);
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index--
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                console.log(index);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 10;
-              index > 10 && index < 89;
-              index = index - 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                console.log(index);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 10;
-              index > 10 && index < 89;
-              index = index + 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            break;
-          case "Bishop":
-            for (
-              let index = newEachcell[element].cellNumber + 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            break;
-          case "Knight":
-            const a = newEachcell[element].cellNumber - 21; // all possible positions of knight
-            const b = newEachcell[element].cellNumber - 19;
-            const c = newEachcell[element].cellNumber - 12;
-            const d = newEachcell[element].cellNumber - 8;
-            const e = newEachcell[element].cellNumber + 8;
-            const f = newEachcell[element].cellNumber + 12;
-            const g = newEachcell[element].cellNumber + 19;
-            const h = newEachcell[element].cellNumber + 21;
-            const possibileMove = [a, b, c, d, e, f, g, h]; //all knight positions save in this
-            const number = possibileMove.filter((element) => {
-              if (element < 11 || element > 88) {
-                //if value less than 11 & greter than 88 remove that number
-                return false;
-              } else if (
-                Math.floor(element % 10) === 9 || // 1st from right digit is equal to 9 is reject
-                Math.floor(element % 10) === 0 //1st from right digit is equal to 0 is reject
-              ) {
-                return false;
-              } else {
-                return true; //if above both conditions are rejected then this is true
-              }
-            });
-            const killNumber = number.filter((element) => {
+            const rookW = rookBMove(newEachcell[element].cellNumber);
+            const killNumberRook = rookW[1].filter((element) => {
               if (
                 eachCell[element].piece[1] === "white" &&
                 eachCell[element].piece[0] === "King"
               ) {
                 return true;
               }
-              //filter number array if that cell is white
             });
-            setpossibleWhiteCheckCells((prev) => [...prev, ...killNumber]);
+            if (killNumberRook.length !== 0) {
+              setarrayOfCheckCellsToWhiteKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
+            }
+            break;
+          case "Bishop":
+            const bishopW = bishopBMove(newEachcell[element].cellNumber);
+            const killNumberBishop = bishopW[1].filter((element) => {
+              if (
+                eachCell[element].piece[1] === "white" &&
+                eachCell[element].piece[0] === "King"
+              ) {
+                return true;
+              }
+            });
+            if (killNumberBishop.length !== 0) {
+              setarrayOfCheckCellsToWhiteKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
+            }
+            break;
+          case "Knight":
+            const knightW = knightBMove(newEachcell[element].cellNumber);
+            const killNumberKnight = knightW[1].filter((element) => {
+              if (
+                eachCell[element].piece[1] === "white" &&
+                eachCell[element].piece[0] === "King"
+              ) {
+                return true;
+              }
+            });
+            if (killNumberKnight.length !== 0) {
+              setarrayOfCheckCellsToBlackKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
+            }
             break;
           case "Queen":
-            for (
-              let index = newEachcell[element].cellNumber + 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index++
-            ) {
+            const queenB = queenBMove(newEachcell[element].cellNumber);
+            const killNumberQueen = queenB[1].filter((element) => {
               if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
+                eachCell[element].piece[1] === "white" &&
+                eachCell[element].piece[0] === "King"
               ) {
-                console.log(newEachcell[index].cellNumber);
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
+                return true;
               }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 1;
-              Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-              index--
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 10;
-              index > 10 && index < 89;
-              index = index - 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 10;
-              index > 10 && index < 89;
-              index = index + 10
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber - 9;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index - 9
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
-            }
-            for (
-              let index = newEachcell[element].cellNumber + 11;
-              Math.floor(index % 10) !== 9 &&
-              Math.floor(index % 10) !== 0 &&
-              index > 10 &&
-              index < 89;
-              index = index + 11
-            ) {
-              if (
-                newEachcell[index].piece[1] === "white" &&
-                newEachcell[index].piece[0] === "King"
-              ) {
-                setpossibleWhiteCheckCells((prev) => [
-                  ...prev,
-                  newEachcell[element].cellNumber,
-                ]);
-                break;
-              }
-              if (
-                newEachcell[index].piece[1] === "black" ||
-                newEachcell[index].piece[1] === "white"
-              ) {
-                break;
-              }
+            });
+            if (killNumberQueen.length !== 0) {
+              setarrayOfCheckCellsToBlackKing((prev) => [
+                ...prev,
+                newEachcell[element].cellNumber,
+              ]);
             }
             break;
           default:
@@ -2703,18 +2017,18 @@ const Board = () => {
         }
       }
     });
-    console.log(possibleWhiteCheckCells);
+    console.log(arrayOfCheckCellsToWhiteKing);
   };
 
   const displayBCheck = () => {
     setdisplayBlackCheck(false);
-    if (possibleBlackCheckCells.length !== 0) {
+    if (arrayOfCheckCellsToBlackKing.length !== 0) {
       setdisplayBlackCheck(true);
     }
   };
   const displayWCheck = () => {
     setdisplayWhiteCheck(false);
-    if (possibleWhiteCheckCells.length !== 0) {
+    if (arrayOfCheckCellsToWhiteKing.length !== 0) {
       setdisplayWhiteCheck(true);
     }
   };
