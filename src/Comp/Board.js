@@ -491,37 +491,33 @@ const Board = () => {
     makeCellRed();
   }, [redCell]); //if change in array of redcell then render that cells as red
 
-  useEffect(() => {
-    movenow();
-  }, [findcheckMove, findcheckKill]);
-
-  useEffect(() => {
-    killnow();
-  }, [findcheckKill]);
 
   useEffect(() => {
     makeCellDarkRed();
   }, [darkRedCell]); //if change in array of darkredcell then render that cells as darkred
 
   useEffect(() => {
-    findCheckToBlackKing();
-    findCheckToWhiteKing();
-  }, [findcheckMove, findcheckKill]); //if change in array of findallWhiteCheckCells then run findCheckToBlackKing function
+  
+      movenow();
+  }, [findcheckMove]); //if change in array of findallWhiteCheckCells then run findCheckToBlackKing function
 
   useEffect(() => {
-    displayWCheck();
-  }, [findcheckMove, findcheckKill]);
-
-  useEffect(() => {
-    displayBCheck();
-    findCheckMateToBlackKing();
-    findCheckMateToWhiteKing();
-  }, [findcheckMove, findcheckKill]);
+   
+     killnow();
+  }, [findcheckKill]);
 
   useEffect(() => {
     findAllblackPieces();
     findAllwhitePieces();
+     findCheckToBlackKing();
+    findCheckToWhiteKing();
+    findCheckMateToBlackKing();
+    findCheckMateToWhiteKing();
+    displayWCheck();
+    displayBCheck();
     kingPositions();
+     makeCellNormal();
+    darkCellNormal();
   }, [turn]); //find all black and white pieces
 
   //to find which turn is this & which piece is click, acc to it run that specific function
@@ -1822,8 +1818,9 @@ const Board = () => {
       if (eachCell[index].piece[1] === "black") {
         break;
       }
-    }
+    }console.log(number,kill)
     return [number, kill];
+    
   };
   const queenBSelfMove = (props) => {
     const kill = [];
@@ -2295,8 +2292,9 @@ const Board = () => {
     return kill;
   };
   const kingBMove = (props) => {
-    console.log(props);
-    const possibleCheckCell = findCheckToBlackKing();
+   
+    const possibleCheckCell = findCheckToWhiteKing();
+   const possibleCheckCell1=findCheckToBlackKing()
     const a = Number(props) - 11; // all possible positions of knight
     const b = Number(props) - 9;
     const c = Number(props) + 11;
@@ -2325,15 +2323,38 @@ const Board = () => {
         return true; //if above both conditions are rejected then this is true
       }
     });
+       const killNumber = possibileMove.filter((element) => {
+      if (element < 11 || element > 88) {
+        //if value less than 11 & greter than 88 remove that number
+        return false;
+      } else if (
+        Math.floor(element % 10) === 9 || // 1st from right digit is equal to 9 is reject
+        Math.floor(element % 10) === 0 //1st from right digit is equal to 0 is reject
+      ) {
+        return false;
+      } else if (
+        eachCell[element].piece[1] === "black"
+      ) {
+        return false;
+      } else if (
+        eachCell[element].piece[0] === ""
+      ) {
+        return false;
+      }
+       else {
+        return true; //if above both conditions are rejected then this is true
+      }
+    });
 
     const number1 = number.filter((val) => !possibleCheckCell[0].includes(val));
-    const killNumber = number.filter((element) => {
-      return eachCell[element].piece[1] === "white"; //filter number array if that cell is white
-    });
+    // const killNumber = number.filter((element) => {
+    //   return eachCell[element].piece[1] === "white"; //filter number array if that cell is white
+    // });
     const killNumber1 = killNumber.filter(
-      (val) => !possibleCheckCell[1].includes(val)
-    );
+      (val) => !possibleCheckCell1[1].includes(val)
+    ); 
     return [number1, killNumber1];
+   
   };
   const kingWMove = (props) => {
     const possibleCheckCell = findCheckToWhiteKing();
@@ -2366,15 +2387,39 @@ const Board = () => {
       }
     });
 
+       const killNumber = possibileMove.filter((element) => {
+      if (element < 11 || element > 88) {
+        //if value less than 11 & greter than 88 remove that number
+        return false;
+      } else if (
+        Math.floor(element % 10) === 9 || // 1st from right digit is equal to 9 is reject
+        Math.floor(element % 10) === 0 //1st from right digit is equal to 0 is reject
+      ) {
+        return false;
+      } else if (
+        eachCell[element].piece[1] === "white" 
+      ) {
+        return false;
+      }else if (
+        eachCell[element].piece[0] === "" 
+      ) {
+        return false;
+      } 
+      else {
+        return true; //if above both conditions are rejected then this is true
+      }
+    });
+
     const number1 = number.filter((val) => !possibleCheckCell[0].includes(val));
 
-    const killNumber = number.filter((element) => {
-      return eachCell[element].piece[1] === "black"; //filter number array if that cell is white
-    });
+    // const killNumber = number.filter((element) => {
+    //   return eachCell[element].piece[1] === "black"; //filter number array if that cell is white
+    // });
     const killNumber1 = killNumber.filter(
       (val) => !possibleCheckCell[1].includes(val)
     );
     return [number1, killNumber1];
+    console.log(number1, killNumber1)
   };
   const makeCellRed = () => {
     redCell.map((item, id) => {
@@ -2411,12 +2456,13 @@ const Board = () => {
     let b = eachCell[selectedCell].piece;
     eachCell[props].piece = b;
     eachCell[selectedCell].piece = a;
-    makeCellNormal();
-    darkCellNormal();
+    // makeCellNormal();
+    // darkCellNormal();
     findCheckToBlackKing();
     findCheckToWhiteKing();
     setfindcheckMove(!findcheckMove);
     setturn(!turn);
+   
   };
   const kill = (props) => {
     setfutureSelectedCell(props);
@@ -2426,12 +2472,13 @@ const Board = () => {
     let b = eachCell[selectedCell].piece;
     eachCell[props].piece = b;
     eachCell[selectedCell].piece = ["", ""];
-    makeCellNormal();
-    darkCellNormal();
+    // makeCellNormal();
+    // darkCellNormal();
     findCheckToBlackKing();
     findCheckToWhiteKing();
     setfindcheckKill(!findcheckKill);
     setturn(!turn);
+     console.log(props,selectedCell,a,b)
   };
   const movenow = () => {
     if (
@@ -2447,7 +2494,8 @@ const Board = () => {
       arrayOfCheckCellsToWhiteKing.length !== 0
     ) {
       checkBeforeKill(futureValue, previousValue, Number(futureSelectedCell));
-    } else {
+    } else if( arrayOfCheckCellsToBlackKing.length === 0 &
+      arrayOfCheckCellsToWhiteKing.length === 0) {
       turn
         ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
         : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
@@ -2465,9 +2513,12 @@ const Board = () => {
   const checkBeforeKill = (a, b, props) => {
     if (turn && arrayOfCheckCellsToBlackKing.length !== 0) {
       makeKillUndo(a, b, props);
+       console.log('undoblackwmovw')
     } else if (!turn && arrayOfCheckCellsToWhiteKing.length !== 0) {
       makeKillUndo(a, b, props);
-    } else {
+      console.log('undowhitwmovw')
+    } else if( arrayOfCheckCellsToBlackKing.length === 0 &&
+      arrayOfCheckCellsToWhiteKing.length === 0) {
       turn
         ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
         : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
@@ -2624,19 +2675,19 @@ const Board = () => {
         }
       }
     });
-    console.log(
-      "allPossibleKillCellOfWhite",
-      allPossibleKillCellOfWhite,
-      "allPossibleSelfKillCellOfWhite",
-      allPossibleSelfKillCellOfWhite,
-      "allPossibleMoveCellOfWhite",
-      allPossibleMoveCellOfWhite,
-      "allKillCellByWhite",
-      allKillCellByWhite,
-      "arrayOfCheckCellsToBlackKing",
-      arrayOfCheckCellsToBlackKing,
-      blackKingPosition
-    );
+    // console.log(
+    //   "allPossibleKillCellOfWhite",
+    //   allPossibleKillCellOfWhite,
+    //   "allPossibleSelfKillCellOfWhite",
+    //   allPossibleSelfKillCellOfWhite,
+    //   "allPossibleMoveCellOfWhite",
+    //   allPossibleMoveCellOfWhite,
+    //   "allKillCellByWhite",
+    //   allKillCellByWhite,
+    //   "arrayOfCheckCellsToBlackKing",
+    //   arrayOfCheckCellsToBlackKing,
+    //   blackKingPosition
+    // );
     return [
       allPossibleKillCellOfWhite,
       allPossibleSelfKillCellOfWhite,
@@ -2767,7 +2818,7 @@ const Board = () => {
               }
             });
             if (killNumberQueen.length !== 0) {
-              setarrayOfCheckCellsToBlackKing((prev) => [
+              setarrayOfCheckCellsToWhiteKing((prev) => [
                 ...prev,
                 newEachcell[element].cellNumber,
               ]);
@@ -2778,19 +2829,19 @@ const Board = () => {
         }
       }
     });
-    console.log(
-      "allPossibleKillCellOfBlack",
-      allPossibleKillCellOfBlack,
-      "allPossibleSelfKillCellOfBlack",
-      allPossibleSelfKillCellOfBlack,
-      "allPossibleMoveCellOfBlack",
-      allPossibleMoveCellOfBlack,
-      "allKillCellByBlack",
-      allKillCellByBlack,
-      "arrayOfCheckCellsToWhiteKing",
-      arrayOfCheckCellsToWhiteKing,
-      whitekingPosition
-    );
+    // console.log(
+    //   "allPossibleKillCellOfBlack",
+    //   allPossibleKillCellOfBlack,
+    //   "allPossibleSelfKillCellOfBlack",
+    //   allPossibleSelfKillCellOfBlack,
+    //   "allPossibleMoveCellOfBlack",
+    //   allPossibleMoveCellOfBlack,
+    //   "allKillCellByBlack",
+    //   allKillCellByBlack,
+    //   "arrayOfCheckCellsToWhiteKing",
+    //   arrayOfCheckCellsToWhiteKing,
+    //   whitekingPosition
+    // );
     return [
       allPossibleKillCellOfBlack,
       allPossibleSelfKillCellOfBlack,
@@ -2842,6 +2893,9 @@ const Board = () => {
       const killNumber1 = arrayOfCheckCellsToBlackKing.filter(
         (val) => !undoCkeckByKill[1].includes(val)
       );
+      // arrayOfCheckCellsToBlackKing.map((element)=>{
+      //   findCellsBetweenKingAndPiece(element)
+      // })
       if (
         king[0].length === 0 &&
         king[1].length === 0 &&
@@ -2853,21 +2907,21 @@ const Board = () => {
     }
   };
   const findCheckMateToWhiteKing = () => {
-    // if (arrayOfCheckCellsToWhiteKing.length > 0) {
-    //   const undoCkeckByKill = findCheckToWhiteKing();
-    //   const king = kingWMove(whiteKingPosition);
-    //   const killNumber1 = arrayOfCheckCellsToWhiteKing.filter(
-    //     (val) => !undoCkeckByKill[1].includes(val)
-    //   );
-    //   if (
-    //     king[0].length === 0 &&
-    //     king[1].length === 0 &&
-    //     killNumber1.length === 0
-    //   ) {
-    //     alert("checkmate");
-    //   }
-    //   console.log(killNumber1, king);
-    // }
+    if (arrayOfCheckCellsToWhiteKing.length > 0) {
+      const undoCkeckByKill = findCheckToWhiteKing();
+      const king = kingWMove(whitekingPosition);
+      const killNumber1 = arrayOfCheckCellsToWhiteKing.filter(
+        (val) => !undoCkeckByKill[1].includes(val)
+      );
+      if (
+        king[0].length === 0 &&
+        king[1].length === 0 &&
+        killNumber1.length === 0
+      ) {
+        alert("checkmate");
+      }
+      console.log(killNumber1, king);
+    }
   };
   const kingPositions = () => {
     Object.keys(eachCell).forEach((element) => {
@@ -2887,6 +2941,7 @@ const Board = () => {
       }
     });
   };
+
   return (
     <>
       <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
