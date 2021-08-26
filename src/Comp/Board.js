@@ -2459,6 +2459,10 @@ const Board = () => {
     findCheckToBlackKing();
     findCheckToWhiteKing();
     setfindcheckKill(!findcheckKill);
+
+    turn
+      ? setcapturedPiecesByWhite((prev) => [...prev, a])
+      : setcapturedPiecesByBlack((prev) => [...prev, a]);
     setturn(!turn);
   };
   const movenow = () => {
@@ -2475,14 +2479,15 @@ const Board = () => {
       arrayOfCheckCellsToWhiteKing.length !== 0
     ) {
       checkBeforeKill(futureValue, previousValue, Number(futureSelectedCell));
-    } else if (
-      (arrayOfCheckCellsToBlackKing.length === 0) &
-      (arrayOfCheckCellsToWhiteKing.length === 0)
-    ) {
-      turn
-        ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
-        : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
     }
+    //  else if (
+    //   (arrayOfCheckCellsToBlackKing.length === 0) &
+    //   (arrayOfCheckCellsToWhiteKing.length === 0)
+    // ) {
+    //   turn
+    //     ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
+    //     : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
+    // }
   };
 
   const checkBeforeMove = (a, b, props) => {
@@ -2496,16 +2501,19 @@ const Board = () => {
   const checkBeforeKill = (a, b, props) => {
     if (turn && arrayOfCheckCellsToBlackKing.length !== 0) {
       makeKillUndo(a, b, props);
+      capturedPiecesByBlack.pop();
     } else if (!turn && arrayOfCheckCellsToWhiteKing.length !== 0) {
       makeKillUndo(a, b, props);
-    } else if (
-      arrayOfCheckCellsToBlackKing.length === 0 &&
-      arrayOfCheckCellsToWhiteKing.length === 0
-    ) {
-      turn
-        ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
-        : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
+      capturedPiecesByWhite.pop();
     }
+    //  else if (
+    //   arrayOfCheckCellsToBlackKing.length === 0 &&
+    //   arrayOfCheckCellsToWhiteKing.length === 0
+    // ) {
+    //   turn
+    //     ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
+    //     : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
+    // }
   };
 
   const makeMoveUndo = (a, b, props) => {
