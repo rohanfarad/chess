@@ -1816,7 +1816,7 @@ const Board = () => {
         break;
       }
     }
-
+    console.log(number, kill);
     return [number, kill];
   };
   const queenBSelfMove = (props) => {
@@ -2289,7 +2289,8 @@ const Board = () => {
     return kill;
   };
   const kingBMove = (props) => {
-    const possibleCheckCell = findCheckToBlackKing();
+    const possibleCheckCell = findCheckToWhiteKing();
+    const possibleCheckCell1 = findCheckToBlackKing();
     const a = Number(props) - 11; // all possible positions of knight
     const b = Number(props) - 9;
     const c = Number(props) + 11;
@@ -2341,9 +2342,9 @@ const Board = () => {
     //   return eachCell[element].piece[1] === "white"; //filter number array if that cell is white
     // });
     const killNumber1 = killNumber.filter(
-      (val) => !possibleCheckCell[1].includes(val)
+      (val) => !possibleCheckCell1[1].includes(val)
     );
-    return [number1, killNumber1, possibileMove];
+    return [number1, killNumber1];
   };
   const kingWMove = (props) => {
     const possibleCheckCell = findCheckToWhiteKing();
@@ -2402,7 +2403,8 @@ const Board = () => {
     const killNumber1 = killNumber.filter(
       (val) => !possibleCheckCell[1].includes(val)
     );
-    return [number1, killNumber1, possibileMove];
+    return [number1, killNumber1];
+    console.log(number1, killNumber1);
   };
   const makeCellRed = () => {
     redCell.map((item, id) => {
@@ -2459,11 +2461,8 @@ const Board = () => {
     findCheckToBlackKing();
     findCheckToWhiteKing();
     setfindcheckKill(!findcheckKill);
-
-    turn
-      ? setcapturedPiecesByWhite((prev) => [...prev, a])
-      : setcapturedPiecesByBlack((prev) => [...prev, a]);
     setturn(!turn);
+    console.log(props, selectedCell, a, b);
   };
   const movenow = () => {
     if (
@@ -2479,15 +2478,14 @@ const Board = () => {
       arrayOfCheckCellsToWhiteKing.length !== 0
     ) {
       checkBeforeKill(futureValue, previousValue, Number(futureSelectedCell));
+    } else if (
+      (arrayOfCheckCellsToBlackKing.length === 0) &
+      (arrayOfCheckCellsToWhiteKing.length === 0)
+    ) {
+      turn
+        ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
+        : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
     }
-    //  else if (
-    //   (arrayOfCheckCellsToBlackKing.length === 0) &
-    //   (arrayOfCheckCellsToWhiteKing.length === 0)
-    // ) {
-    //   turn
-    //     ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
-    //     : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
-    // }
   };
 
   const checkBeforeMove = (a, b, props) => {
@@ -2501,19 +2499,18 @@ const Board = () => {
   const checkBeforeKill = (a, b, props) => {
     if (turn && arrayOfCheckCellsToBlackKing.length !== 0) {
       makeKillUndo(a, b, props);
-      capturedPiecesByBlack.pop();
+      console.log("undoblackwmovw");
     } else if (!turn && arrayOfCheckCellsToWhiteKing.length !== 0) {
       makeKillUndo(a, b, props);
-      capturedPiecesByWhite.pop();
+      console.log("undowhitwmovw");
+    } else if (
+      arrayOfCheckCellsToBlackKing.length === 0 &&
+      arrayOfCheckCellsToWhiteKing.length === 0
+    ) {
+      turn
+        ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
+        : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
     }
-    //  else if (
-    //   arrayOfCheckCellsToBlackKing.length === 0 &&
-    //   arrayOfCheckCellsToWhiteKing.length === 0
-    // ) {
-    //   turn
-    //     ? setcapturedPiecesByBlack((prev) => [...prev, futureValue])
-    //     : setcapturedPiecesByWhite((prev) => [...prev, futureValue]);
-    // }
   };
 
   const makeMoveUndo = (a, b, props) => {
@@ -2667,7 +2664,6 @@ const Board = () => {
       }
     });
     // console.log(
-    //   "findCheckToBlackKing",
     //   "allPossibleKillCellOfWhite",
     //   allPossibleKillCellOfWhite,
     //   "allPossibleSelfKillCellOfWhite",
@@ -2680,7 +2676,6 @@ const Board = () => {
     //   arrayOfCheckCellsToBlackKing,
     //   blackKingPosition
     // );
-
     return [
       allPossibleKillCellOfWhite,
       allPossibleSelfKillCellOfWhite,
@@ -2823,7 +2818,6 @@ const Board = () => {
       }
     });
     // console.log(
-    //   "findCheckToWhiteKing",
     //   "allPossibleKillCellOfBlack",
     //   allPossibleKillCellOfBlack,
     //   "allPossibleSelfKillCellOfBlack",
@@ -2882,143 +2876,39 @@ const Board = () => {
   const findCheckMateToBlackKing = () => {
     if (arrayOfCheckCellsToBlackKing.length > 0) {
       const undoCkeckByKill = findCheckToBlackKing();
-      const whitepossiblemoves = findCheckToWhiteKing();
 
       const king = kingBMove(blackKingPosition);
-
-      //find if piece is adjucent to king
-      const kingNearCell = arrayOfCheckCellsToBlackKing.filter((val) =>
-        king[2].includes(val)
+      const killNumber1 = arrayOfCheckCellsToBlackKing.filter(
+        (val) => !undoCkeckByKill[1].includes(val)
       );
-
-      const betweenCell = findCheckCellsToBlackKingFromPiece({
-        blackKingPosition,
-        arrayOfCheckCellsToBlackKing,
-      });
-
-      var selfKillNumber1 = [];
-
-      if (kingNearCell.length !== 0) {
-        selfKillNumber1 = arrayOfCheckCellsToBlackKing.filter(
-          (val) => !undoCkeckByKill[1].includes(val)
-        );
+      // arrayOfCheckCellsToBlackKing.map((element)=>{
+      //   findCellsBetweenKingAndPiece(element)
+      // })
+      if (
+        king[0].length === 0 &&
+        king[1].length === 0 &&
+        killNumber1.length === 0
+      ) {
+        alert("checkmate");
       }
-
-      const betweenCell1 = betweenCell.filter((val) =>
-        whitepossiblemoves[2].includes(val)
-      );
-
-      const canKillThatCell = arrayOfCheckCellsToBlackKing.filter((val) =>
-        whitepossiblemoves[3].includes(val)
-      );
-
-      if (kingNearCell.length === 0) {
-        if (
-          king[0].length === 0 &&
-          king[1].length === 0 &&
-          betweenCell1.length === 0 &&
-          canKillThatCell.length === 0
-        ) {
-          setTimeout(() => {
-            alert("checkmate");
-          }, 1000);
-        }
-      } else if (kingNearCell.length > 0) {
-        if (
-          king[0].length === 0 &&
-          king[1].length === 0 &&
-          selfKillNumber1.length === 0 &&
-          canKillThatCell.length === 0
-        ) {
-          setTimeout(() => {
-            alert("checkmate");
-          }, 1000);
-        }
-      }
-
-      console.log(
-        arrayOfCheckCellsToBlackKing,
-        canKillThatCell,
-        kingNearCell,
-        selfKillNumber1,
-        king,
-        betweenCell,
-        betweenCell1
-        // whitepossiblemoves[2],
-        // undoCkeckByKill[1],
-        // whitepossiblemoves[3]
-      );
+      console.log(killNumber1, king);
     }
   };
   const findCheckMateToWhiteKing = () => {
     if (arrayOfCheckCellsToWhiteKing.length > 0) {
       const undoCkeckByKill = findCheckToWhiteKing();
-      const whitepossiblemoves = findCheckToBlackKing();
-
       const king = kingWMove(whitekingPosition);
-
-      //find if piece is adjucent to king
-      const kingNearCell = arrayOfCheckCellsToWhiteKing.filter((val) =>
-        king[2].includes(val)
+      const killNumber1 = arrayOfCheckCellsToWhiteKing.filter(
+        (val) => !undoCkeckByKill[1].includes(val)
       );
-
-      const betweenCell = findCheckCellsToWhiteKingFromPiece({
-        whitekingPosition,
-        arrayOfCheckCellsToWhiteKing,
-      });
-
-      var selfKillNumber1 = [];
-
-      if (kingNearCell.length !== 0) {
-        selfKillNumber1 = arrayOfCheckCellsToWhiteKing.filter(
-          (val) => !undoCkeckByKill[1].includes(val)
-        );
+      if (
+        king[0].length === 0 &&
+        king[1].length === 0 &&
+        killNumber1.length === 0
+      ) {
+        alert("checkmate");
       }
-
-      const betweenCell1 = betweenCell.filter((val) =>
-        whitepossiblemoves[2].includes(val)
-      );
-
-      const canKillThatCell = arrayOfCheckCellsToWhiteKing.filter((val) =>
-        whitepossiblemoves[3].includes(val)
-      );
-
-      if (kingNearCell.length === 0) {
-        if (
-          king[0].length === 0 &&
-          king[1].length === 0 &&
-          betweenCell1.length === 0 &&
-          canKillThatCell.length === 0
-        ) {
-          setTimeout(() => {
-            alert("checkmate");
-          }, 1000);
-        }
-      } else if (kingNearCell.length > 0) {
-        if (
-          king[0].length === 0 &&
-          king[1].length === 0 &&
-          selfKillNumber1.length === 0 &&
-          canKillThatCell.length === 0
-        ) {
-          setTimeout(() => {
-            alert("checkmate");
-          }, 1000);
-        }
-      }
-
-      console.log(
-        arrayOfCheckCellsToWhiteKing,
-        canKillThatCell,
-        kingNearCell,
-        selfKillNumber1,
-        king,
-        betweenCell,
-        betweenCell1
-        // whitepossiblemoves[2],
-        // undoCkeckByKill[1],
-        // whitepossiblemoves[3]
-      );
+      console.log(killNumber1, king);
     }
   };
   const kingPositions = () => {
@@ -3040,252 +2930,6 @@ const Board = () => {
     });
   };
 
-  const findCheckCellsToBlackKingFromPiece = ({
-    blackKingPosition,
-    arrayOfCheckCellsToBlackKing,
-  }) => {
-    // console.log(
-    //   "findchekfromcell",
-    //   blackKingPosition,
-    //   arrayOfCheckCellsToBlackKing
-    // );
-    const arraayOfMiddleCells = [];
-    arrayOfCheckCellsToBlackKing.map((element) => {
-      if (
-        Math.floor(element / 10) % 10 ===
-          Math.floor(blackKingPosition / 10) % 10 &&
-        element - blackKingPosition > 0
-      ) {
-        for (
-          let index = Number(element) - 1;
-          Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-          index--
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if (
-        Math.floor(element / 10) % 10 ===
-          Math.floor(blackKingPosition / 10) % 10 &&
-        element - blackKingPosition < 0
-      ) {
-        for (
-          let index = Number(element) + 1;
-          Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-          index++
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element + 1 - blackKingPosition) % 10 === 1) {
-        for (
-          let index = Number(element) - 10;
-          index > 10 && index < 89;
-          index = index - 10
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element - 1 - blackKingPosition) % 10 === -1) {
-        for (
-          let index = Number(element) + 10;
-          index > 10 && index < 89;
-          index = index + 10
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element + 1 - blackKingPosition) % 9 === 1) {
-        for (
-          let index = Number(element) - 9;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index - 9
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element - 1 - blackKingPosition) % 9 === -1) {
-        for (
-          let index = Number(element) + 9;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index + 9
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element + 1 - blackKingPosition) % 11 === 1) {
-        for (
-          let index = Number(element) - 11;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index - 11
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element - 1 - blackKingPosition) % 11 === -1) {
-        for (
-          let index = Number(element) + 11;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index + 11
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      }
-    });
-    return arraayOfMiddleCells;
-  };
-  const findCheckCellsToWhiteKingFromPiece = ({
-    whitekingPosition,
-    arrayOfCheckCellsToWhiteKing,
-  }) => {
-    // console.log(
-    //   "findchekfromcell",
-    //   blackKingPosition,
-    //   arrayOfCheckCellsToBlackKing
-    // );
-    const arraayOfMiddleCells = [];
-    arrayOfCheckCellsToWhiteKing.map((element) => {
-      if (
-        Math.floor(element / 10) % 10 ===
-          Math.floor(whitekingPosition / 10) % 10 &&
-        element - whitekingPosition > 0
-      ) {
-        for (
-          let index = Number(element) - 1;
-          Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-          index--
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if (
-        Math.floor(element / 10) % 10 ===
-          Math.floor(whitekingPosition / 10) % 10 &&
-        element - whitekingPosition < 0
-      ) {
-        for (
-          let index = Number(element) + 1;
-          Math.floor(index % 10) !== 9 && Math.floor(index % 10) !== 0;
-          index++
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element + 1 - whitekingPosition) % 10 === 1) {
-        for (
-          let index = Number(element) - 10;
-          index > 10 && index < 89;
-          index = index - 10
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element - 1 - whitekingPosition) % 10 === -1) {
-        for (
-          let index = Number(element) + 10;
-          index > 10 && index < 89;
-          index = index + 10
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element + 1 - whitekingPosition) % 9 === 1) {
-        for (
-          let index = Number(element) - 9;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index - 9
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element - 1 - whitekingPosition) % 9 === -1) {
-        for (
-          let index = Number(element) + 9;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index + 9
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element + 1 - whitekingPosition) % 11 === 1) {
-        for (
-          let index = Number(element) - 11;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index - 11
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      } else if ((element - 1 - whitekingPosition) % 11 === -1) {
-        for (
-          let index = Number(element) + 11;
-          Math.floor(index % 10) !== 9 &&
-          Math.floor(index % 10) !== 0 &&
-          index > 10 &&
-          index < 89;
-          index = index + 11
-        ) {
-          if (eachCell[index].piece[0] === "King") {
-            break;
-          }
-          arraayOfMiddleCells.push(index);
-        }
-      }
-    });
-    return arraayOfMiddleCells;
-  };
   return (
     <>
       <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
@@ -3306,6 +2950,14 @@ const Board = () => {
       </div> */}
       <br />
       <div className="middleSection">
+        <div className="checkBox">
+          {displayBlackCheck && (
+            <div className="checkBoxBlack">
+              <h2>check to black</h2>
+            </div>
+          )}
+        </div>
+
         <div className={turn ? "boardWhiteOutline" : "boardBlackOutline"}>
           <div className="Board">
             {Object.keys(eachCell).map((item, id) => (
@@ -3324,6 +2976,13 @@ const Board = () => {
             ))}
           </div>
         </div>
+        <div className="checkBox">
+          {displayWhiteCheck && (
+            <div className="checkBoxWhite">
+              <h2>check to white</h2>
+            </div>
+          )}
+        </div>
       </div>
       {/* <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
         Available Pieces :
@@ -3341,21 +3000,6 @@ const Board = () => {
           <ShowPieces key={id} getPieces={element} />
         ))}
       </div>
-      <br />
-      {(displayBlackCheck || displayWhiteCheck) && (
-        <div className="checkBox">
-          {displayBlackCheck && (
-            <div className="checkBoxBlack">
-              <h2>check to black</h2>
-            </div>
-          )}
-          {displayWhiteCheck && (
-            <div className="checkBoxWhite">
-              <h2>check to white</h2>
-            </div>
-          )}
-        </div>
-      )}
       <Timer />
     </>
   );

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, memo } from "react";
-import reactDom from "react-dom";
 
 const Timer = () => {
   const [whiteCellTimer, setwhiteCellTimer] = useState(360);

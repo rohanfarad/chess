@@ -17,54 +17,78 @@ const BoardCell = (props) => {
     if (props.getPiece[1] === "white") {
       switch (props.getPiece[0]) {
         case "Rook":
-          return <img src={whiteRook} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="whiteRook" src={whiteRook} style={{ width: "48px" }} />
+          );
         case "Knight":
-          return <img src={whiteKnight} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img
+              alt="whiteKnight"
+              src={whiteKnight}
+              style={{ width: "48px" }}
+            />
+          );
         case "Bishop":
-          return <img src={whiteBishop} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img
+              alt="whiteBishop"
+              src={whiteBishop}
+              style={{ width: "48px" }}
+            />
+          );
         case "Queen":
-          return <img src={whiteQueen} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="whiteQueen" src={whiteQueen} style={{ width: "48px" }} />
+          );
         case "King":
-          return <img src={whiteKing} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="whiteKing" src={whiteKing} style={{ width: "48px" }} />
+          );
         case "Pawn":
-          return <img src={whitePawn} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="whitePawn" src={whitePawn} style={{ width: "48px" }} />
+          );
         case "":
           return;
-          break;
         default:
-          break;
       }
     } else {
       switch (props.getPiece[0]) {
         case "Rook":
-          return <img src={blackRook} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="blackRook" src={blackRook} style={{ width: "48px" }} />
+          );
         case "Knight":
-          return <img src={blackKnight} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img
+              alt="blackKnight"
+              src={blackKnight}
+              style={{ width: "48px" }}
+            />
+          );
         case "Bishop":
-          return <img src={blackBishop} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img
+              alt="blackBishop"
+              src={blackBishop}
+              style={{ width: "48px" }}
+            />
+          );
         case "Queen":
-          return <img src={blackQueen} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="blackQueen" src={blackQueen} style={{ width: "48px" }} />
+          );
         case "King":
-          return <img src={blackKing} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="blackKing" src={blackKing} style={{ width: "48px" }} />
+          );
         case "Pawn":
-          return <img src={blackPawn} style={{ width: "48px" }} />;
-          break;
+          return (
+            <img alt="blackPawn" src={blackPawn} style={{ width: "48px" }} />
+          );
         case "":
           return;
-          break;
         default:
-          break;
       }
     }
   };

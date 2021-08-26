@@ -20,7 +20,7 @@ const ShowPieces = (props) => {
           return (
             <img alt="whiteRook" src={whiteRook} style={{ width: "24px" }} />
           );
-          break;
+
         case "Knight":
           return (
             <img
@@ -29,7 +29,7 @@ const ShowPieces = (props) => {
               style={{ width: "24px" }}
             />
           );
-          break;
+
         case "Bishop":
           return (
             <img
@@ -38,25 +38,23 @@ const ShowPieces = (props) => {
               style={{ width: "24px" }}
             />
           );
-          break;
+
         case "Queen":
           return (
             <img alt="whiteQueen" src={whiteQueen} style={{ width: "24px" }} />
           );
-          break;
+
         case "King":
           return (
             <img alt="whiteKing" src={whiteKing} style={{ width: "24px" }} />
           );
-          break;
+
         case "Pawn":
           return (
             <img alt="whitePawn" src={whitePawn} style={{ width: "24px" }} />
           );
-          break;
 
         default:
-          break;
       }
     } else {
       switch (props.getPieces[0]) {
@@ -64,7 +62,6 @@ const ShowPieces = (props) => {
           return (
             <img alt="blackRook" src={blackRook} style={{ width: "24px" }} />
           );
-          break;
         case "Knight":
           return (
             <img
@@ -73,7 +70,6 @@ const ShowPieces = (props) => {
               style={{ width: "24px" }}
             />
           );
-          break;
         case "Bishop":
           return (
             <img
@@ -82,27 +78,21 @@ const ShowPieces = (props) => {
               style={{ width: "24px" }}
             />
           );
-          break;
         case "Queen":
           return (
             <img alt="blackQueen" src={blackQueen} style={{ width: "24px" }} />
           );
-          break;
         case "King":
           return (
             <img alt="blackKing" src={blackKing} style={{ width: "24px" }} />
           );
-          break;
         case "Pawn":
           return (
             <img alt="blackPawn" src={blackPawn} style={{ width: "24px" }} />
           );
-          break;
         case "":
           return;
-          break;
         default:
-          break;
       }
     }
   };
