@@ -3306,14 +3306,6 @@ const Board = () => {
       </div> */}
       <br />
       <div className="middleSection">
-        <div className="checkBox">
-          {displayBlackCheck && (
-            <div className="checkBoxBlack">
-              <h2>check to black</h2>
-            </div>
-          )}
-        </div>
-
         <div className={turn ? "boardWhiteOutline" : "boardBlackOutline"}>
           <div className="Board">
             {Object.keys(eachCell).map((item, id) => (
@@ -3332,13 +3324,6 @@ const Board = () => {
             ))}
           </div>
         </div>
-        <div className="checkBox">
-          {displayWhiteCheck && (
-            <div className="checkBoxWhite">
-              <h2>check to white</h2>
-            </div>
-          )}
-        </div>
       </div>
       {/* <label style={{ margin: "auto", textAlign: "center", display: "block" }}>
         Available Pieces :
@@ -3356,6 +3341,21 @@ const Board = () => {
           <ShowPieces key={id} getPieces={element} />
         ))}
       </div>
+      <br />
+      {(displayBlackCheck || displayWhiteCheck) && (
+        <div className="checkBox">
+          {displayBlackCheck && (
+            <div className="checkBoxBlack">
+              <h2>check to black</h2>
+            </div>
+          )}
+          {displayWhiteCheck && (
+            <div className="checkBoxWhite">
+              <h2>check to white</h2>
+            </div>
+          )}
+        </div>
+      )}
       <Timer />
     </>
   );
