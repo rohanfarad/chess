@@ -2936,18 +2936,18 @@ const Board = () => {
         }
       }
 
-      // console.log(
-      //   arrayOfCheckCellsToBlackKing,
-      //   canKillThatCell,
-      //   kingNearCell,
-      //   selfKillNumber1,
-      //   king,
-      //   betweenCell,
-      //   betweenCell1
-      //   // whitepossiblemoves[2],
-      //   // undoCkeckByKill[1],
-      //   // whitepossiblemoves[3]
-      // );
+      console.log(
+        arrayOfCheckCellsToBlackKing,
+        canKillThatCell,
+        kingNearCell,
+        selfKillNumber1,
+        king,
+        betweenCell,
+        betweenCell1
+        // whitepossiblemoves[2],
+        // undoCkeckByKill[1],
+        // whitepossiblemoves[3]
+      );
     }
   };
   const findCheckMateToWhiteKing = () => {
@@ -3007,18 +3007,18 @@ const Board = () => {
         }
       }
 
-      // console.log(
-      //   arrayOfCheckCellsToBlackKing,
-      //   canKillThatCell,
-      //   kingNearCell,
-      //   selfKillNumber1,
-      //   king,
-      //   betweenCell,
-      //   betweenCell1
-      //   // whitepossiblemoves[2],
-      //   // undoCkeckByKill[1],
-      //   // whitepossiblemoves[3]
-      // );
+      console.log(
+        arrayOfCheckCellsToWhiteKing,
+        canKillThatCell,
+        kingNearCell,
+        selfKillNumber1,
+        king,
+        betweenCell,
+        betweenCell1
+        // whitepossiblemoves[2],
+        // undoCkeckByKill[1],
+        // whitepossiblemoves[3]
+      );
     }
   };
   const kingPositions = () => {
@@ -3164,7 +3164,7 @@ const Board = () => {
     return arraayOfMiddleCells;
   };
   const findCheckCellsToWhiteKingFromPiece = ({
-    whiteKingPosition,
+    whitekingPosition,
     arrayOfCheckCellsToWhiteKing,
   }) => {
     // console.log(
@@ -3176,8 +3176,8 @@ const Board = () => {
     arrayOfCheckCellsToWhiteKing.map((element) => {
       if (
         Math.floor(element / 10) % 10 ===
-          Math.floor(whiteKingPosition / 10) % 10 &&
-        element - whiteKingPosition > 0
+          Math.floor(whitekingPosition / 10) % 10 &&
+        element - whitekingPosition > 0
       ) {
         for (
           let index = Number(element) - 1;
@@ -3191,8 +3191,8 @@ const Board = () => {
         }
       } else if (
         Math.floor(element / 10) % 10 ===
-          Math.floor(whiteKingPosition / 10) % 10 &&
-        element - whiteKingPosition < 0
+          Math.floor(whitekingPosition / 10) % 10 &&
+        element - whitekingPosition < 0
       ) {
         for (
           let index = Number(element) + 1;
@@ -3204,7 +3204,7 @@ const Board = () => {
           }
           arraayOfMiddleCells.push(index);
         }
-      } else if ((element + 1 - whiteKingPosition) % 10 === 1) {
+      } else if ((element + 1 - whitekingPosition) % 10 === 1) {
         for (
           let index = Number(element) - 10;
           index > 10 && index < 89;
@@ -3215,7 +3215,7 @@ const Board = () => {
           }
           arraayOfMiddleCells.push(index);
         }
-      } else if ((element - 1 - whiteKingPosition) % 10 === -1) {
+      } else if ((element - 1 - whitekingPosition) % 10 === -1) {
         for (
           let index = Number(element) + 10;
           index > 10 && index < 89;
@@ -3226,7 +3226,7 @@ const Board = () => {
           }
           arraayOfMiddleCells.push(index);
         }
-      } else if ((element + 1 - whiteKingPosition) % 9 === 1) {
+      } else if ((element + 1 - whitekingPosition) % 9 === 1) {
         for (
           let index = Number(element) - 9;
           Math.floor(index % 10) !== 9 &&
@@ -3240,7 +3240,7 @@ const Board = () => {
           }
           arraayOfMiddleCells.push(index);
         }
-      } else if ((element - 1 - whiteKingPosition) % 9 === -1) {
+      } else if ((element - 1 - whitekingPosition) % 9 === -1) {
         for (
           let index = Number(element) + 9;
           Math.floor(index % 10) !== 9 &&
@@ -3254,7 +3254,7 @@ const Board = () => {
           }
           arraayOfMiddleCells.push(index);
         }
-      } else if ((element + 1 - whiteKingPosition) % 11 === 1) {
+      } else if ((element + 1 - whitekingPosition) % 11 === 1) {
         for (
           let index = Number(element) - 11;
           Math.floor(index % 10) !== 9 &&
@@ -3268,7 +3268,7 @@ const Board = () => {
           }
           arraayOfMiddleCells.push(index);
         }
-      } else if ((element - 1 - whiteKingPosition) % 11 === -1) {
+      } else if ((element - 1 - whitekingPosition) % 11 === -1) {
         for (
           let index = Number(element) + 11;
           Math.floor(index % 10) !== 9 &&
