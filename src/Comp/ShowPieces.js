@@ -54,9 +54,7 @@ const ShowPieces = (props) => {
             <img alt="whitePawn" src={whitePawn} style={{ width: "24px" }} />
           );
           break;
-        case "":
-          return;
-          break;
+
         default:
           break;
       }

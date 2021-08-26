@@ -13,7 +13,6 @@ import whiteKnight from "./Img/whiteKnight.png";
 import whiteRook from "./Img/whiteRook.png";
 
 const BoardCell = (props) => {
-  console.log("cell");
   const renderImage = () => {
     if (props.getPiece[1] === "white") {
       switch (props.getPiece[0]) {
